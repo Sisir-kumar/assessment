@@ -1,84 +1,64 @@
-import React,{Component} from 'react';
+import React, { useState} from 'react';
 import './App.css';
-class App extends Component {
-  constructor(props) {
-    super(props)
-    this.state={
-      text:'',
-      word:''
-    }
-    this.handleChange = this.handleChange.bind(this);
-}
+import axios from 'axios'
+import Favarite from './Favarite';
+//import Movie from './Movie';
+function App (){
+ const [all, setAll] = useState([]);
+ const [movies, setMovies] = useState([]);
+//  const [series, setSeries] = useState({});
+//  const [episodes, setEpisodes] = useState({});
+ const [search, setSearch] = useState('')
+ const [select, setSelect] = useState('')
+ const [like, setLike] = useState(false)
 
-handleChange(event) {
-    this.setState({text: event.target.value})
-}
-render() {
-    const splitted =this.state.text.split(" ");
-    const words=[]
-    for(let i=0; i<splitted.length; i++){
-      words[splitted[i]] = ( typeof words[splitted[i]] != 'undefined' ) ? words[splitted[i]]+=1 : 1 
+ const submitValue =(e)=>{
+   e.preventDefault()
+    async function fetchData (){
+        const request =await axios.get(`http://www.omdbapi.com/?apikey=62634223&type=${select}&s=${search}&y=${search}&i=${search}`)
+        setMovies(request.data.Search)
+        return request
     }
+    fetchData();
+ 
+ }
+ const addWishlist =(s)=>{
+   console.log(s)
+ }
 
     return(
         <div className="App">
-            <h1>ttt word frequency counter</h1>
-            <input type="text" placeholder="Enter a number" value={this.state.text} onChange={this.handleChange} />
-            <br/>
-           
-            <div className="container">
-                <table align="center">
-                  <tr>
-                    <h4>5 Character</h4>
-                     {Object.keys(words).map((key,index)=>{
-                     if(key.length===5){
-                       return<tr>
-                           <td key={index}>{key}</td>
-                           <td key={index+1}>{words[key]}</td>
-                         </tr>
-                     }
-                   })}
-                   </tr>
-                   <tr>
-                   <h4> 4 Character</h4>
-                   {Object.keys(words).map((key,index)=>{
-                    if(key.length===4){
-                      return<tr>
-                          <td key={index}>{key}</td>
-                          <td key={index+1}>{words[key]}</td>
-                        </tr>
-                    }
-                  })}
-                   </tr>
-                   <tr>
-                   <h4> 3 Character</h4>
-                   {Object.keys(words).map((key,index)=>{
-                    if(key.length===3){
-                      return<tr>
-                          <td key={index}>{key}</td>
-                          <td key={index+1}>{words[key]}</td>
-                        </tr>
-                    }
-                  })}
-                   </tr>
-                   <tr>
-                     <t4> 2 Character</t4>
-                   {Object.keys(words).map((key,index)=>{
-                    if(key.length===2){
-                      return<tr>
-                          <td key={index}>{key}</td>
-                          <td key={index+1}>{words[key]}</td>
-                        </tr>
-                    }
-                  })}
-                   </tr>
-                </table>
-            </div>
-            <br/>
-            
+           <div className="nav__bar">
+             <h4 className="nav__home">Home</h4>
+             
+           </div>
+           <form className="search__item" onSubmit={submitValue}>
+                <select defaultValue={select} onChange={(e)=>setSelect(e.target.value)}>
+                 <option selected value="" selected>All</option>
+                 <option value="movie">Movie</option>
+                 <option value="series">Series</option>                 
+                 <option value="episodes">Episodes</option>                 
+               </select>
+               <input type="text" value={search}  onChange={(e)=>setSearch(e.target.value)}/>
+               <button type="submit">Search</button>
+           </form>
+         <div className="Cards">
+              {!movies? "" :movies.map(movie=>{
+               return (
+                  <div className="card">
+                    <img className="card__img" src={movie.Poster} alt={movie.Title} />
+                    <div className="container">
+                      <h4><b>{movie.Title} </b></h4> 
+                      <p>{movie.Year} </p>
+                     
+                    </div>
+                  </div>
+              )
+            })}
+           </div>  
+          
         </div>
-    )
-}
+      )
  
 }
 export default App;
